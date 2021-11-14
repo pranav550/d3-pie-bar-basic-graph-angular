@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StatsPieChart } from '../data/data';
-import * as d3 from 'd3-selection';
+import * as d3 from 'd3';
 import * as d3Scale from 'd3-scale';
 import * as d3Shape from 'd3-shape';
 @Component({
@@ -15,7 +15,8 @@ export class PieChartComponent implements OnInit {
   width: number;
   height: number;
   radius: number;
-
+  legendText:any=[];
+  legend:any;
   arc: any;
   labelArc: any;
   labelPer: any;
@@ -32,6 +33,7 @@ export class PieChartComponent implements OnInit {
   ngOnInit() {
     this.initSvg();
     this.drawPie();
+    this.setLegend()
   }
 
   initSvg() {
@@ -75,5 +77,36 @@ export class PieChartComponent implements OnInit {
     g.append('text').attr('transform', (d: any) => 'translate(' + this.labelPer.centroid(d) + ')')
         .attr('dy', '.35em')
         .text((d: any) => d.data.electionP + '%');
+  }
+
+  setLegend(){
+    console.log(StatsPieChart)
+    StatsPieChart.forEach(data=>{
+      console.log(data)
+      this.legendText.push(data.party+"-"+data.electionP)
+    })
+    this.legend = d3.select("#legend").append("svg")
+    .attr("class", "legend")
+    .attr("width", 140)
+    .attr("height", 200)
+    .selectAll("g")
+    .data(d3.range(this.legendText.length))//  w  w w.  de  mo 2  s .com
+    .enter()
+    .append("g")
+    .attr("transform", function(d, i) {
+      return "translate(0," + i * 20 + ")";
+    });
+    this.legend.append("rect")
+    .attr("width", 18)
+    .attr("height", 18)
+    .style("fill", this.color);
+    this.legend.append("text")
+    .data(this.legendText)
+    .attr("x", 24)
+    .attr("y", 9)
+    .attr("dy", ".35em")
+    .text(function(d) {
+      return d;
+    });
   }
 }
