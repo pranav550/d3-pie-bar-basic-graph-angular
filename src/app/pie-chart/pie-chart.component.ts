@@ -73,22 +73,23 @@ export class PieChartComponent implements OnInit {
       .enter().append('g')
       .attr('class', 'arc');
     g.append('path').attr('d', this.arc)
-      .style('fill', (d: any) => this.color(d.data.party));
+      .style('fill', (d: any) => this.color(d.data.party))
+      .on("mouseover", function (d) {
+        console.log(d)
+        d3.select("#tooltip")
+            .style("left", d3.event.pageX + "px")
+            .style("top", d3.event.pageY + "px")
+            .style("opacity", 1)
+            .select("#value")
+            .text(d.value);
+    })
+        .on("mouseout", function () {
+        // Hide the tooltip
+        d3.select("#tooltip")
+             .style("opacity", 0);
+    })
     g.append('text').attr('transform', (d: any) => 'translate(' + this.labelArc.centroid(d) + ')')
-        .on("mouseover", function (d) {
-          console.log(d)
-          d3.select("#tooltip")
-              .style("left", d3.event.pageX + "px")
-              .style("top", d3.event.pageY + "px")
-              .style("opacity", 1)
-              .select("#value")
-              .text(d.value);
-      })
-          .on("mouseout", function () {
-          // Hide the tooltip
-          d3.select("#tooltip")
-               .style("opacity", 0);
-      })
+       
       .attr('dy', '.35em')
       .text((d: any) => d.data.party)
 
